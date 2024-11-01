@@ -1,4 +1,4 @@
-### TODO NEED TO INTEGERATE CAVA
+### TODO: NEED TO INTEGERATE CAVA
 
 # dwmblocks
 Modular status bar for dwm written in c.
