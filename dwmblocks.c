@@ -5,6 +5,7 @@
 #include<signal.h>
 #include<math.h> // added by warlord - to perform floating point mod function using fmod 
                  // inorder to set intervals in subseconds
+                 // look @ comment @ line 86 to learn more
 #ifndef NO_X
 #include<X11/Xlib.h>
 #endif
@@ -82,9 +83,12 @@ void getcmd(const Block *block, char *output)
 void getcmds(float time)
 {
 	const Block* current;
+  // IF YOU WANT TO UNDERSTAND SUBSECOND SUPPORT
+  // printf("\n%f\n",time); // uncomment me and @ line 91
 	for (unsigned int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
 		if ((current->interval != 0 && fabs(fmod(time,current->interval)) < 0.0001) || time == -1 || current->interval == -1)
+      // printf("%s",current->command);
 			getcmd(current,statusbar[i]);
 	}
 }
