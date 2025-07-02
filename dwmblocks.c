@@ -3,6 +3,8 @@
 #include<string.h>
 #include<unistd.h>
 #include<signal.h>
+#include<math.h> // added by warlord - to perform floating point mod function using fmod 
+                 // inorder to set intervals in subseconds
 #ifndef NO_X
 #include<X11/Xlib.h>
 #endif
@@ -21,20 +23,20 @@
 typedef struct {
 	char* icon;
 	char* command;
-	unsigned int interval;
+	int interval;
 	unsigned int signal;
 } Block;
 #ifndef __OpenBSD__
 void dummysighandler(int num);
 #endif
 void sighandler(int num);
-void getcmds(int time);
+void getcmds(float time);
 void getsigcmds(unsigned int signal);
 void setupsignals();
 void sighandler(int signum);
 int getstatus(char *str, char *last);
 void statusloop();
-void termhandler();
+void termhandler(int signum);
 void pstdout();
 #ifndef NO_X
 void setroot();
@@ -77,12 +79,12 @@ void getcmd(const Block *block, char *output)
 	pclose(cmdf);
 }
 
-void getcmds(int time)
+void getcmds(float time)
 {
 	const Block* current;
 	for (unsigned int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
-		if ((current->interval != 0 && time % current->interval == 0) || time == -1)
+		if ((current->interval != 0 && fabs(fmod(time,current->interval)) < 0.0001) || time == -1 || current->interval == -1)
 			getcmd(current,statusbar[i]);
 	}
 }
@@ -156,14 +158,15 @@ void pstdout()
 void statusloop()
 {
 	setupsignals();
-	int i = 0;
+	float i = 0;
 	getcmds(-1);
 	while (1) {
-		getcmds(i++);
+		getcmds(i);
 		writestatus();
 		if (!statusContinue)
 			break;
-		sleep(1.0);
+		usleep(100*1000);
+    i+=0.1;
 	}
 }
 
@@ -181,7 +184,7 @@ void sighandler(int signum)
 	writestatus();
 }
 
-void termhandler()
+void termhandler(int signum)
 {
 	statusContinue = 0;
 }
