@@ -4,7 +4,8 @@
 #include<unistd.h>
 #include<signal.h>
 #include<math.h>  // added by warlord - to perform floating point mod function using fmod 
-                 // inorder to set intervals in subseconds
+                  // inorder to set intervals in subseconds
+                  // There is a comment @ line 86 to learn more
 #ifndef NO_X
 #include<X11/Xlib.h>
 #endif
@@ -82,6 +83,8 @@ void getcmd(const Block *block, char *output)
 void getcmds(float time)
 {
 	const Block* current;
+  // IF YOU WANT TO UNDERSTAND SUBSECOND SUPPORT 
+  // printf("\n%f\n",time); uncomment me
 	for (unsigned int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
 		if ((current->interval != 0 && fabs(fmod(time,current->interval)) < 0.0001) || time == -1 || current->interval==-1)
@@ -158,14 +161,17 @@ void pstdout()
 void statusloop()
 {
 	setupsignals();
-	int i = 0;
+	float i = 0;
 	getcmds(-1);
 	while (1) {
-		getcmds(i++);
+		getcmds(i);
 		writestatus();
 		if (!statusContinue)
 			break;
-		sleep(1.0);
+		usleep(100*1000); // usleep takes microseconds as parameter
+                      // 100*1000 is 100 milliseconds [ 1000 microseconds = 1 millisecond ]
+                      // 100 millisecond = 0.1 second
+    i+=0.1;
 	}
 }
 

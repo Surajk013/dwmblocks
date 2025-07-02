@@ -4,7 +4,7 @@ static const Block blocks[] = {
 /*Icon*/	/*Command*/		/*Update Interval*/	/*Update Signal*/
   {"",    "nettraf",          	1,                 16}, 
   {"",     "memory",          	1,                  4},
-  {"",    "battery",            1,                  1},
+  // {"",    "battery",            1,                  1},
   {"",    "cpubars",          	1,                  1},
   {"", 	"cpu-usage",            1,                  1},
   {"",     "volume", 	         -1,                 10},
