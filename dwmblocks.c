@@ -3,6 +3,8 @@
 #include<string.h>
 #include<unistd.h>
 #include<signal.h>
+#include<math.h>  // added by warlord - to perform floating point mod function using fmod 
+                 // inorder to set intervals in subseconds
 #ifndef NO_X
 #include<X11/Xlib.h>
 #endif
@@ -28,13 +30,13 @@ typedef struct {
 void dummysighandler(int num);
 #endif
 void sighandler(int num);
-void getcmds(int time);
+void getcmds(float time);
 void getsigcmds(unsigned int signal);
 void setupsignals();
 void sighandler(int signum);
 int getstatus(char *str, char *last);
 void statusloop();
-void termhandler();
+void termhandler(int signum);
 void pstdout();
 #ifndef NO_X
 void setroot();
@@ -77,12 +79,12 @@ void getcmd(const Block *block, char *output)
 	pclose(cmdf);
 }
 
-void getcmds(int time)
+void getcmds(float time)
 {
 	const Block* current;
 	for (unsigned int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
-		if ((current->interval != 0 && time % current->interval == 0) || time == -1)
+		if ((current->interval != 0 && fabs(fmod(time,current->interval)) < 0.0001) || time == -1 || current->interval==-1)
 			getcmd(current,statusbar[i]);
 	}
 }
@@ -181,7 +183,7 @@ void sighandler(int signum)
 	writestatus();
 }
 
-void termhandler()
+void termhandler(int signum)
 {
 	statusContinue = 0;
 }
