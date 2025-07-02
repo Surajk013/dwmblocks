@@ -84,10 +84,11 @@ void getcmds(float time)
 {
 	const Block* current;
   // IF YOU WANT TO UNDERSTAND SUBSECOND SUPPORT 
-  // printf("\n%f\n",time); uncomment me
+  // printf("\n%f\n",time); uncomment me and @ line 91
 	for (unsigned int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
 		if ((current->interval != 0 && fabs(fmod(time,current->interval)) < 0.0001) || time == -1 || current->interval==-1)
+      // printf("%s",current->command);
 			getcmd(current,statusbar[i]);
 	}
 }
